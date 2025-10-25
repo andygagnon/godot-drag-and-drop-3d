@@ -4,8 +4,8 @@ extends Node3D
 # --- Constants & Export Variables ---
 
 @export var board_size: int = 8             # 8x8 grid
-@export var cell_size: float = 1.0          # Size of one grid cell (e.g., 1 meter)
-@export var piece_height: float = 0.2       # Height above the board to lift the piece
+@export var cell_size: float = 3.0          # Size of one grid cell (e.g., 1 meter)
+@export var piece_height: float = 1.2       # Height above the board to lift the piece
 
 # --- Nodes and State Variables ---
 
@@ -46,6 +46,7 @@ func create_piece(color: Color, position_grid: Vector3i) -> RigidBody3D:
 	piece.position = snap_to_grid(Vector3(position_grid.x, 0, position_grid.z))
 	# Lift it to sit on top of the board
 	piece.position.y = piece_height / 2.0
+	piece.position.y = piece_height / 1.0
 	
 	# FIX 1: Set mode to KINEMATIC (value 2) once, bypassing name/type errors.
 	#piece.mode = 2 # MODE_KINEMATIC
@@ -53,6 +54,7 @@ func create_piece(color: Color, position_grid: Vector3i) -> RigidBody3D:
 	# FIX 2: Use freeze=true to anchor it when not being dragged.
 	piece.freeze = true 
 	piece.freeze = false 
+	#piece.freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC;
 	
 	# Setup Collision Layers:
 	piece.set_collision_layer_value(LAYER_PIECE, true) # Pieces are on their own layer (for raycasting)
@@ -117,6 +119,9 @@ func spawn_pieces():
 	add_child(create_piece(Color.RED, Vector3i(1, 0, 1)))
 	add_child(create_piece(Color.GREEN, Vector3i(6, 0, 1)))
 	add_child(create_piece(Color.BLUE, Vector3i(1, 0, 6)))
+	add_child(create_piece(Color.RED, Vector3i(5, 0, 6)))
+	add_child(create_piece(Color.BLUE, Vector3i(4, 0, 4)))
+	add_child(create_piece(Color.GREEN, Vector3i(5, 0, 3)))
 
 # --- Grid Snapping Logic ---
 
@@ -174,7 +179,6 @@ func _process(delta):
 		
 		# Solve for t where ray_origin.y + ray_dir.y * t = DRAG_PLANE_Y
 		var t = (DRAG_PLANE_Y - ray_origin.y) / ray_dir.y
-		#held_piece.freeze = false
 		
 		if t > 0:
 			var hit_point = ray_origin + ray_dir * t

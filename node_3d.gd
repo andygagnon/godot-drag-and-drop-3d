@@ -45,7 +45,7 @@ func create_piece(color: Color, position_grid: Vector3i) -> RigidBody3D:
 	# Initial snapping to grid
 	piece.position = snap_to_grid(Vector3(position_grid.x, 0, position_grid.z))
 	# Lift it to sit on top of the board
-	piece.position.y = piece_height / 2.0
+	#piece.position.y = piece_height / 2.0
 	piece.position.y = piece_height / 1.0
 	
 	# FIX 1: Set mode to KINEMATIC (value 2) once, bypassing name/type errors.
@@ -191,8 +191,8 @@ func _process(delta):
 			target_pos.y += initial_y_offset
 			
 			# Update the held piece's position
-			held_piece.global_position = target_pos
-
+			held_piece.global_position = target_pos			
+			held_piece.global_position.y = -(held_piece.global_position.y) + (0.5*piece_height)
 # --- Dropping Logic ---
 
 func drop_piece():
@@ -205,6 +205,9 @@ func drop_piece():
 		
 		# 3. Apply the final position
 		held_piece.global_position = final_pos
+		
+		# set rotation
+		held_piece.rotation = Vector3(0, 0, 0)
 		
 		# Use freeze=true to re-anchor the piece to prevent it from falling
 		held_piece.freeze = true
